@@ -203,7 +203,7 @@ public class LM2Teleop extends LinearOpMode {
 
             if (state != StateE.ASCENT_STATE) {
                 servostop1.setPosition(1.0);
-                servostop2.setPosition(0.25);
+                servostop2.setPosition(0.20);
             }
             if (gamepad1.x == true) {
                 state = StateE.CHAMBER_STATE;
