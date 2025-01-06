@@ -122,7 +122,8 @@ public class LM2Teleop extends LinearOpMode {
     enum HangE {
         ABOVE_RUNG,
         ON_RUNG,
-        ZERO_RUNG
+        ZERO_RUNG,
+        L3_RUNG
     }
 
     HangE hangE = HangE.ZERO_RUNG;
@@ -294,11 +295,11 @@ public class LM2Teleop extends LinearOpMode {
         if (hangE == HangE.ABOVE_RUNG) {
             verticalLeft1.setTargetPosition(1500);
             verticalRight1.setTargetPosition(-1500);
-            TrotateServo.setPosition(0.3);
+            TrotateServo.setPosition(0.6);
             TgimbleServo.setPosition(1);
             //THESE SERVO POS WORK
             servostop1.setPosition(0);
-            servostop2.setPosition(0.8  );
+            servostop2.setPosition(0.6);
         }
 
         telemetry.addData("vertical left %f", verticalLeft1.getCurrentPosition());
@@ -308,13 +309,55 @@ public class LM2Teleop extends LinearOpMode {
 
     public void ascentFinal() {
         boolean GPRB = gamepad1.right_bumper;
+        boolean GPRA = gamepad1.dpad_right;
+       //Business Logic
         if (GPRB && hangE == HangE.ABOVE_RUNG) {
             hangE = HangE.ON_RUNG;
         }
+        if (GPRA && hangE == HangE.ON_RUNG) {
+           hangE = HangE.L3_RUNG;
+        }
+        //L2
         if (hangE == HangE.ON_RUNG) {
             verticalLeft1.setTargetPosition(0);
             verticalRight1.setTargetPosition(0);
+            sleep(500);
+//            verticalLeft1.setTargetPosition(300);
+//            verticalRight1.setTargetPosition(-300);
+//
+//            sleep(500);
         }
+        telemetry.addData("rightback", rightBackDrive.getCurrentPosition());
+        telemetry.addData("leftback", leftBackDrive.getCurrentPosition());
+        telemetry.addData("vertical left %f", verticalLeft1.getCurrentPosition());
+        telemetry.addData("vertical right %f", verticalRight1.getCurrentPosition());
+        telemetry.update();
+
+        //L3
+//        if(hangE==HangE.L3_RUNG) {
+//            verticalLeft1.setTargetPosition(200);
+//            verticalRight1.setTargetPosition(-200);
+//            sleep(250);
+//            verticalLeft1.setTargetPosition(300);
+//            verticalRight1.setTargetPosition(-300);
+//            sleep(250);
+//            //move up the slides
+//            servostop1.setPosition(1.0);
+//            servostop2.setPosition(0.20);
+//            //close the micro-servos
+//            sleep(100);
+//            verticalLeft1.setTargetPosition(1000);
+//            verticalRight1.setTargetPosition(-1000);
+//            sleep(250);
+//            //raise up the slides
+//            servostop1.setPosition(0);
+//            servostop2.setPosition(0.8);
+//            //open the micro-servos again
+//            sleep(100);
+//            //time for L3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//            verticalLeft1.setTargetPosition(0);
+//            verticalRight1.setTargetPosition(-0);
+//        }
     }
 
     public void drive() {
@@ -344,15 +387,15 @@ public class LM2Teleop extends LinearOpMode {
         rightFrontDrive.setPower(right);
         rightBackDrive.setPower(right);
 
-        telemetry.addData("drive %f", drive);
-        telemetry.addData("turn %f", turn);
-        telemetry.update();
+        //telemetry.addData("drive %f", drive);
+        //telemetry.addData("turn %f", turn);
+        //telemetry.update();
 
     }
 
     public void sample() {
 
-        if (gamepad1.dpad_left == true) {
+        if (gamepad1.dpad_left) {
             sampleTransfer();
         }
 
@@ -378,7 +421,7 @@ public class LM2Teleop extends LinearOpMode {
 
         //ROTATE SERVO
         //MACRO
-        if (gamepad1.dpad_down == true) {
+        if (gamepad1.dpad_down) {
             grabServoe = IntakeGrabStates.GRAB_OPEN;
             sleep(250);
             rotateServoe = IntakeRotateStates.INTAKE_DOWN;
@@ -459,7 +502,7 @@ public class LM2Teleop extends LinearOpMode {
             rotateServo.setPosition(0.95);//rotating intake fully upright
         if (rotate == IntakeRotateStates.INTAKE_MIDDLE)
             rotateServo.setPosition(0.35);//rotate intake middle position
-        sleep(300);
+        sleep(150);
 
         //Intake Grab Servo:
         if (grab == IntakeGrabStates.GRAB_CLOSE)
@@ -470,7 +513,7 @@ public class LM2Teleop extends LinearOpMode {
 
         if (grab == IntakeGrabStates.GRAB_ADJUST) {
             grabServo.setPosition(0.5);
-            sleep(300);
+            sleep(150);
             grabServo.setPosition(1);
         }
         sleep(150);
@@ -481,7 +524,7 @@ public class LM2Teleop extends LinearOpMode {
 
         if (gimble == IntakeGimbleStates.GIMBLE_NINETY)
             gimbleServo.setPosition(1);
-        sleep(250);
+        sleep(150);
     }
     public void controlTransfer(TransferRotateStates rotate, TransferGrabStates grab, TransferGimbleStates gimble) {
         // Hardware Calls for Transfer Servos:
@@ -494,7 +537,7 @@ public class LM2Teleop extends LinearOpMode {
             TrotateServo.setPosition(0.3);//rotate intake middle position
         if (rotate == TransferRotateStates.TRANSFER_HANG)
             TrotateServo.setPosition(0.625);//rotate intake middle position
-        sleep(250);
+        sleep(150);
 
         //Transfer Grab Servo:
         if (grab == TransferGrabStates.TRANSFER_CLOSE) {
@@ -508,7 +551,7 @@ public class LM2Teleop extends LinearOpMode {
         if (grab == TransferGrabStates.TRANSFER_ADJUST){
             TgrabServo.setPosition(0.4);//Open Claw
         }
-        sleep(250);
+        sleep(150);
 
         //Transfer Gimble Servo:
         if (gimble == TransferGimbleStates.TRANSFER_CENTER){
@@ -520,7 +563,7 @@ public class LM2Teleop extends LinearOpMode {
         if (gimble == TransferGimbleStates.GIMBLE_HANG){
             TgimbleServo.setPosition(0.8);
         }
-        sleep(250);
+        sleep(150);
 
     }
     public void sampleTransfer(){
@@ -538,7 +581,7 @@ public class LM2Teleop extends LinearOpMode {
         //sleep(250);
         // 5. Bring the transfer directly over the sample
         controlTransfer(TransferRotateStates.TRANSFER_DOWN, TransferGrabStates.TRANSFER_OPEN, TransferGimbleStates.TRANSFER_NINETY);
-        sleep(1000);
+        sleep(500);
         // 6. Grab the sample with the transfer claw
         controlTransfer(TransferRotateStates.TRANSFER_DOWN, TransferGrabStates.TRANSFER_CLOSE, TransferGimbleStates.TRANSFER_NINETY);
         //sleep(250);
